@@ -1,0 +1,64 @@
+version: 2.1
+
+jobs:
+  prepare:
+    docker:
+      - image: hashicorp/terraform:latest
+    steps:
+      - checkout
+      - run:
+          name: Install AWS CLI
+          command: |
+            apt-get update
+            apt-get install -y awscli
+      - run:
+          name: Terraform Initialization
+          command: terraform init
+
+  plan:
+    docker:
+      - image: hashicorp/terraform:latest
+    steps:
+      - checkout
+      - run:
+          name: Terraform Validation
+          command: terraform validate
+      - run:
+          name: Terraform Plan
+          command: terraform plan -out=tfplan_tgw
+      - persist_to_workspace:
+          root: .
+          paths:
+            - tfplan_tgw
+
+  approve:
+    docker:
+      - image: hashicorp/terraform:latest
+    steps:
+      - checkout
+      - run:
+          name: Manual Approval
+          command: echo "Awaiting manual approval..."
+
+  apply:
+    docker:
+      - image: hashicorp/terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /workspace
+      - run:
+          name: Terraform Apply
+          command: terraform apply /workspace/tfplan_tgw
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - prepare
+      - plan
+      - approve
+      - apply:
+          requires:
+            - approve
+

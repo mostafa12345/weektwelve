@@ -1,0 +1,8 @@
+vpc1_cidr_block = "10.0.0.0/16"
+vpc2_cidr_block = "10.1.0.0/16"
+vpc3_cidr_block = "10.2.0.0/16"
+subnet1_cidr_block = "10.0.1.0/24"
+subnet2_cidr_block = "10.1.1.0/24"
+subnet3_cidr_block = "10.2.1.0/24"
+environment = "terraformChamps"
+owner = "mostafa"
